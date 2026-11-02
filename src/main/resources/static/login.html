@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CivicFix - Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+<div id="nav"></div>
+<div class="auth-bg">
+    <div class="container" style="max-width: 420px;">
+        <div class="card p-4">
+            <h4 class="mb-1">Welcome back</h4>
+            <p class="text-muted">Login to report and track civic issues.</p>
+            <div id="msg"></div>
+            <form id="f">
+                <label class="form-label">Email</label>
+                <input id="email" type="email" class="form-control mb-3" required>
+                <label class="form-label">Password</label>
+                <input id="pwd" type="password" class="form-control mb-3" required>
+                <button class="btn btn-primary w-100">Login</button>
+            </form>
+            <p class="mt-3 mb-1 text-center">New here? <a href="register.html">Create an account</a></p>
+            <small class="text-muted text-center d-block">
+                Demo citizen: citizen@civicfix.com / citizen123<br>
+                Demo admin: admin@civicfix.com / admin123
+            </small>
+        </div>
+    </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+    initNav().then(me => { if (me.loggedIn) location.href = me.role === 'ADMIN' ? 'admin.html' : 'index.html'; });
+
+    $('f').addEventListener('submit', async e => {
+        e.preventDefault();
+        try {
+            const me = await api('/api/auth/login', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: $('email').value, password: $('pwd').value })
+            });
+            location.href = me.role === 'ADMIN' ? 'admin.html' : 'index.html';
+        } catch (err) {
+            $('msg').innerHTML = `<div class="alert alert-danger py-2">${esc(err.message)}</div>`;
+        }
+    });
+</script>
+</body>
+</html>
